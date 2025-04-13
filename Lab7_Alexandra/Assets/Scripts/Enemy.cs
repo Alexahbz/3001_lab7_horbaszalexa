@@ -41,7 +41,7 @@ public class Enemy : MonoBehaviour
             }
             else 
             {
-                Debug.Log("Enem using shotgun");
+                Debug.Log("Enemy using shotgun");
                 UseShotgun();
             }
         }
