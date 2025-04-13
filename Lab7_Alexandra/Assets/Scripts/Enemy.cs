@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Enemy : MonoBehaviour
@@ -12,6 +13,9 @@ public class Enemy : MonoBehaviour
 
     private float switchTimer = 0f;
     private float switchCoolDown = 5f;
+
+    private float shootCooldown = 1.5f;
+    private float shootTimer = 0f;
     private enum WeaponType { None, Shotgun, Sniper}
     private WeaponType currentWeapon = WeaponType.None;
 
@@ -33,10 +37,12 @@ public class Enemy : MonoBehaviour
             if (currentWeapon == WeaponType.Sniper)
             {
                 Debug.Log("Enemy using sniper");
+                UseSniper();
             }
             else 
             {
                 Debug.Log("Enem using shotgun");
+                UseShotgun();
             }
         }
     }
@@ -58,10 +64,48 @@ public class Enemy : MonoBehaviour
     void UseSniper()
     {
         Debug.Log("Enemy is using the sniper!");
+
+        float distance = Vector2.Distance(transform.position, player.position);
+
+        if (distance < 4f)
+        {
+            Vector2 dir = (transform.position - player.position).normalized;
+            Vector2 newPos = (Vector2)transform.position + dir * speed * Time.deltaTime;
+            transform.position = ClampToScreen(newPos);
+        }
+
+        shootTimer += Time.deltaTime;
+        if (distance >= 3.5f && shootTimer >= shootCooldown)
+        {
+            Debug.Log("Enemy sniped the player!");
+            shootTimer = 0f;
+        }
+        
     }
     void UseShotgun()
     {
         Debug.Log("Enemy is using the shotgun!");
+
+        
+        Vector2 dir = (player.position - transform.position).normalized;
+        Vector2 newPos = (Vector2)transform.position + dir * speed * Time.deltaTime;
+        transform.position = ClampToScreen(newPos);
+
+        float distance = Vector2.Distance(transform.position, player.position);
+
+        shootTimer += Time.deltaTime;
+        if (distance >= 1.5f && shootTimer >= shootCooldown)
+        {
+            Debug.Log("Enemy shot the player!");
+            shootTimer = 0f;
+        }
+    }
+
+    Vector2 ClampToScreen(Vector2 pos)
+    {
+        pos.x = Mathf.Clamp(pos.x, -7.5f, 7.5f);
+        pos.y = Mathf.Clamp(pos.y, -4f, 4f);
+        return pos;
     }
 
     void MoveToRemainingWeapon()
@@ -85,9 +129,8 @@ public class Enemy : MonoBehaviour
             Vector2 direction = (target.transform.position - transform.position).normalized;
             Vector2 newPos = (Vector2)transform.position + direction * speed * Time.deltaTime;
 
-            newPos.x = Mathf.Clamp(newPos.x, -7.5f, 7.5f);
-            newPos.y = Mathf.Clamp(newPos.y, -4f, 4f);
-            transform.position = newPos;
+            transform.position = ClampToScreen(newPos);
+            
         }
     }
 

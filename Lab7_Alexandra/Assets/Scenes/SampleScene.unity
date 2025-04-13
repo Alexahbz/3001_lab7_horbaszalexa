@@ -354,7 +354,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 6719825737401270800}
-  speed: 4
+  speed: 3
   hasSniper: 0
   hasShotgun: 0
 --- !u!58 &1150167995278017849
